@@ -1,3 +1,19 @@
+## React.JS Drum Machine.
+
+Future Goals:
+Web API Synth & Sample based playback at same time.
+Motion Control
+Export files
+Full Midi Integration/Mapping.
+Sample Chopping/Mapping internally
+External Sequencing (maybe)
+Song Mode
+Alternative Skins
+And other stuff.
+
+Boilerplate Create-React-App Stuff follows.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

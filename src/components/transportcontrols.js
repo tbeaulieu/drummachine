@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
 class TransportControls extends Component{
-    constructor(props){
-        super(props);
-    }
     render(){
         return(
             <div className="transport-controls-wrapper">

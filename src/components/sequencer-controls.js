@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
 class SequencerControls extends Component{
-    constructor(props){
-        super(props);
-    }
     render(){
         return(
             <div className="sequencer-wrapper">

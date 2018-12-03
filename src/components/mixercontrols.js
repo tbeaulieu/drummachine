@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
 class MixerContainer extends Component{
-    constructor(props){
-        super(props);
-    }
     handleChange(event, key){
         this.props.sequence[key].volume= event.target.value;
     }
