@@ -1,32 +1,99 @@
+body{
+  background: #3f4c6b;
+  color: #e0d7d7;
+}
+
 .App {
   text-align: center;
+  width: 800px;
+  margin: 20px auto;
+  border: 2px solid #e0d7d7;
+  border-radius:20px;
+  padding: 25px;
+  display: block;
+}
+.transport-control-wrapper{
+  display:block;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+.trackselection-wrapper{
+  height: 130px;
+  width: 450px;
+  display:inline-block;
+}
+.trackselector-wrapper{
+  width:100px;
+  height:20px;
+  display:inline-block;
+  padding:5px;
+}
+.volumeslider{
+  display:inline-block;
+  width:20px;
+  height: 80px;
+  padding: 0;
+  margin: 0 2.5px;
+}
+.volumeslider input{
+  width: 80px;
+  height: 20px;
+  margin: 0;
+  transform-origin: 40px 40px;
+  transform: rotate(-90deg);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.sequencer-wrapper{
+  margin: 50px 0 0;
+  /* border:5px solid #aaa4a4; */
+  border-radius: 8px;
+  display:inline-block;
+  padding: 50px;
 }
 
-.App-link {
-  color: #61dafb;
+.sequencer-button-wrapper{
+  display:inline-block;
+}
+.sequencer--button{
+  position:relative;
+  height:70px;
+  width:70px;
+  border:1px solid #000;
+  display:inline-block;
+  margin: 0 5px;
+  font-size: 24px;
+  line-height:70px;
+  border-radius:5px;
+  background: linear-gradient(to bottom, #606c88 0%,#3f4c6b 100%); 
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.sequencer--button.active{
+  background: linear-gradient(to bottom, #b6bac4 0%,#6e7177 100%); 
+}
+
+.sequencer--button:active{
+  opacity:.7;
+}
+
+.sequencer-button-wrapper:nth-of-type(4n+1) .sequencer--button::after{
+  content:'';
+  width: 50px;
+  height: 5px;
+  border-radius: 1.5px;
+  display:block;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: #000;
+}
+
+.sequencer-button-wrapper label{
+  position:relative;
+  display:block;
+  width:70px;
+  text-align:center;
+  margin: 5px 5px 0;
+  font-size: 11px;
+  color: #aaa4a4;
+  font-weight:800;
+  font-family: Helvetica, sans-serif;
 }
