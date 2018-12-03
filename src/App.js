@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Tone from 'tone';
 import TransportControls from './components/transportcontrols';
 import SequencerControls from './components/sequencer-controls';
 import MixerControls from './components/mixercontrols';
@@ -12,6 +13,11 @@ Object.size = function(obj) {
   }
   return size;
 };
+
+
+
+Tone.Transport.loop = true;
+Tone.Transport.loopEnd = '1m';
 
 class App extends Component {
   constructor(props){
@@ -31,54 +37,62 @@ class App extends Component {
   sequence = {
     "track1":{
       "notes": [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/BD.wav"
           },
     "track2":{
       "notes": [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/Snaredrum.wav"
     },
     "track3":{
       "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/Snaredrum.wav"
     },
     "track4":{
       "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/Clap.wav"
     },
     "track5":{
       "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/CH.wav"
     },
     "track6":{
       "notes": [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/OH.wav"
     },
     "track7":{
       "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/Crash.wav"
     },
     "track8":{
       "notes": [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      "volume": 127
+      "volume": 127,
+      "sample": "./samples/909/Ride.wav"
     }
   }
 
-  stopSequencer=(e)=>{
+  
+  stopSequencer=()=>{
     this.setState({playstate: 0});
-    console.log(this.state.playstate);
+    Tone.Transport.stop();
   }
 
-  startSequencer=(e)=>{
+  startSequencer=()=>{
     this.setState({playstate: 1});
-    console.log(this.state.playstate);
-    console.log(this.sequence.track1.volume);
+    Tone.Transport.start();
+    Tone.context.resume().then(()=> {player.autostart = true});
   }
 
   updateNote=(index)=>{
     let updated= + !this.state.currentnotes[index];
     let updatedMeasure = this.state.currentnotes;
     updatedMeasure[index]=updated;
-    console.log(updated);
     this.setState({
         currentnotes: updatedMeasure
     });
@@ -95,6 +109,9 @@ class App extends Component {
   }
 
   componentDidMount(){
+    // StartAudioContext(Tone.context);
+    let player = new Tone.Player(this.sequence.track1.sample).toMaster();
+
     this.setState({
         tracks: Object.size(this.sequence),
         currentnotes: this.sequence.track1.notes

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 class TransportControls extends Component{
+    
     render(){
         return(
             <div className="transport-controls-wrapper">
