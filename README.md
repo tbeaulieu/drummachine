@@ -9,8 +9,8 @@ Sample Chopping/Mapping internally<br>
 External Sequencing (maybe)<br>
 Song Mode<br>
 Alternative Skins<br>
-And other stuff.<br>
 VISUALIZER<br>
+And other stuff.<br>
 
 Boilerplate Create-React-App Stuff follows.
 

@@ -15,16 +15,12 @@ Object.size = function(obj) {
 };
 
 
-
-Tone.Transport.loop = true;
-Tone.Transport.loopEnd = '1m';
-
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {
       playstate: 0,
-      bpm: 100,
+      bpm: 128,
       tracks: '',
       pads: 16,
       currenttrack: "track1",
@@ -48,7 +44,7 @@ class App extends Component {
     "track3":{
       "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       "volume": 127,
-      "sample": "./samples/909/Snaredrum.wav"
+      "sample": "./samples/909/Rimshot.wav"
     },
     "track4":{
       "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -77,7 +73,16 @@ class App extends Component {
     }
   }
 
-  
+  // sampleplayer = Object(this.sequence).map((key)=> 
+  //    let player[key] = new Tone.Player(this.sequence[key].sample).toMaster()
+  // );
+  //initialize our sequence object with a function call for a player 
+  initializeSounds(ourObj){
+    Object.keys(ourObj).map((track, index)=>{
+      ourObj[track].fireIt= new Tone.Player(ourObj[track].sample).toMaster(); //Change this to sample at some point?
+      return true;
+    });
+  }
   stopSequencer=()=>{
     this.setState({playstate: 0});
     Tone.Transport.stop();
@@ -86,7 +91,6 @@ class App extends Component {
   startSequencer=()=>{
     this.setState({playstate: 1});
     Tone.Transport.start();
-    Tone.context.resume().then(()=> {player.autostart = true});
   }
 
   updateNote=(index)=>{
@@ -98,27 +102,60 @@ class App extends Component {
     });
   }
 
+  //Update our master sequencer track to selected, and save the old one
   switchTrack=(event, key)=>{
     let oldTrack = this.state.currenttrack;
-    this.sequence[oldTrack].notes=this.state.currentnotes; //Update our master sequence
-    console.log(this.sequence[key].notes);
+    this.sequence[oldTrack].notes=this.state.currentnotes; 
     this.setState({ 
       currentnotes: this.sequence[key].notes,
       currenttrack: key
     });
+    this.sequence[key].fireIt.start();
   }
 
   componentDidMount(){
     // StartAudioContext(Tone.context);
-    let player = new Tone.Player(this.sequence.track1.sample).toMaster();
-
+    this.initializeSounds(this.sequence);
     this.setState({
         tracks: Object.size(this.sequence),
         currentnotes: this.sequence.track1.notes
-      })
+      });
+    Tone.Transport.bpm.value = this.state.bpm;
+    Tone.Transport.schedule(this.startLoop, "0:0:0");
+    Tone.Transport.loop = true;
+    Tone.Transport.loopEnd = '1m';
+
+  }
+  startLoop = (time: number) => {
+    // console.log("Start loop ", time)
+    // this.sequence.track1.fireIt.start(time);
+    // this.sequence.track1.fireIt.start(time + 0.5);
+    // this.sequence.track1.fireIt.start(time + 1);
+    // this.sequence.track1.fireIt.start(time + 1.5);
+  //   Tone.Transport.schedule((time)=>{
+  //       this.sequence.track1.fireIt.start(time);
+  //   },"0:0:1");
+  //   Tone.Transport.schedule((time)=>{
+  //     this.sequence.track1.fireIt.start(time);
+  // },"0:0:5")
+  //   Tone.Transport.schedule((time)=>{
+  //     this.sequence.track1.fireIt.start(time);
+  // },"0:0:9")
+  //   Tone.Transport.schedule((time)=>{
+  //     this.sequence.track1.fireIt.start(time);
+  //   },"0:0:13")
+    Object.keys(this.sequence).map((track)=>{
+      let reducedSteps = this.sequence[track].notes.reduce(function(a, srch, i){ if(srch === 1)a.push(i+1); return a;},[]);
+      // console.log(deviceson);
+      reducedSteps.map((steps)=>{
+          Tone.Transport.schedule((time)=>{
+            this.sequence[track].fireIt.start(time);
+          },"0:0:"+steps);
+      });
+    });
   }
 
-  render() {
+  render(){
     return (
       <div className="App">
         <TransportControls
