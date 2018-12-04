@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Tone from 'tone';
 import TransportControls from './components/transportcontrols';
 import SequencerControls from './components/sequencer-controls';
-import MixerControls from './components/mixercontrols';
+//import MixerControls from './components/mixercontrols'; This is out for now until I get a better realtime check on the controlls with Tone.js
 import TrackSelection from './components/trackselection';
 import './App.css';
 
@@ -79,7 +79,7 @@ class App extends Component {
   //initialize our sequence object with a function call for a player 
   initializeSounds(ourObj){
     Object.keys(ourObj).map((track, index)=>{
-      ourObj[track].fireIt= new Tone.Player(ourObj[track].sample).toMaster(); //Change this to sample at some point?
+      ourObj[track].fireIt= new Tone.Player({"url":ourObj[track].sample, "vol":ourObj[track].volume}).toMaster(); //Change this to sample at some point?
       return true;
     });
   }
@@ -100,6 +100,10 @@ class App extends Component {
     this.setState({
         currentnotes: updatedMeasure
     });
+    
+    // Tone.Transport.scheduleOnce((time)=>{
+    //   this.sequence[this.state.currenttrack].fireIt.start()
+    // },"0:0:"+index+1);
   }
 
   //Update our master sequencer track to selected, and save the old one
@@ -110,7 +114,9 @@ class App extends Component {
       currentnotes: this.sequence[key].notes,
       currenttrack: key
     });
-    this.sequence[key].fireIt.start();
+    if(this.state.playstate!==1){
+      this.sequence[key].fireIt.start();
+    }
   }
 
   componentDidMount(){
@@ -124,33 +130,15 @@ class App extends Component {
     Tone.Transport.schedule(this.startLoop, "0:0:0");
     Tone.Transport.loop = true;
     Tone.Transport.loopEnd = '1m';
-
   }
   startLoop = (time: number) => {
-    // console.log("Start loop ", time)
-    // this.sequence.track1.fireIt.start(time);
-    // this.sequence.track1.fireIt.start(time + 0.5);
-    // this.sequence.track1.fireIt.start(time + 1);
-    // this.sequence.track1.fireIt.start(time + 1.5);
-  //   Tone.Transport.schedule((time)=>{
-  //       this.sequence.track1.fireIt.start(time);
-  //   },"0:0:1");
-  //   Tone.Transport.schedule((time)=>{
-  //     this.sequence.track1.fireIt.start(time);
-  // },"0:0:5")
-  //   Tone.Transport.schedule((time)=>{
-  //     this.sequence.track1.fireIt.start(time);
-  // },"0:0:9")
-  //   Tone.Transport.schedule((time)=>{
-  //     this.sequence.track1.fireIt.start(time);
-  //   },"0:0:13")
     Object.keys(this.sequence).map((track)=>{
       let reducedSteps = this.sequence[track].notes.reduce(function(a, srch, i){ if(srch === 1)a.push(i+1); return a;},[]);
       // console.log(deviceson);
       reducedSteps.map((steps)=>{
-          Tone.Transport.schedule((time)=>{
+          Tone.Transport.scheduleOnce((time)=>{
             this.sequence[track].fireIt.start(time);
-          },"0:0:"+steps);
+          },"0:0:"+steps);//Ableton Timing style. eg Measures:Bars:16ths.
       });
     });
   }
@@ -169,10 +157,10 @@ class App extends Component {
           sequence={this.sequence}
           switchTrack={this.switchTrack}
         />
-        <MixerControls
+        {/* <MixerControls
           tracks={this.state.tracks}
           sequence={this.sequence}
-          />
+          /> */}
         <SequencerControls 
           pads={this.state.pads}
           currenttrack={this.state.currenttrack}

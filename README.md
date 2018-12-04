@@ -1,6 +1,14 @@
 ## React.JS Drum Machine.
 
+Current Status:<br>
+Plays simple 16 step sequences.<br>
+Loads Samples<br>
+Semi-Realtime editing<br>
+Instrument Switching<br>
+
 Future Goals:<br>
+Volume Sliders working<br>
+Trace light via Tonal.Transport.Draw();<br>
 Web API Synth & Sample based playback at same time.<br>
 Motion Control<br>
 Export files<br>
