@@ -6,7 +6,7 @@ class TrackSelection extends Component{
         return(
             <div className="trackselection-wrapper">
                 {Object.keys(this.props.sequence).map((key)=>
-                        <div key={key} className="trackselector-wrapper"><button onClick={(event)=>this.props.switchTrack(event, key)}>{key}</button></div>
+                        <div key={key} className="trackselector-wrapper"><button onClick={(event)=>this.props.switchTrack(event, key)} data-selected={this.props.currenttrack === key && "true"}>{key}</button></div>
                 )}
             </div>
         ) 

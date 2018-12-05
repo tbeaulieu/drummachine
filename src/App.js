@@ -25,7 +25,8 @@ class App extends Component {
       pads: 16,
       currenttrack: "track1",
       currentnotes: [],
-      volume: []
+      volume: [],
+      transportTime: ""
     }
   }
 
@@ -42,17 +43,17 @@ class App extends Component {
       "sample": "./samples/909/Snaredrum.wav"
     },
     "track3":{
-      "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "notes": [0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0],
       "volume": 127,
       "sample": "./samples/909/Rimshot.wav"
     },
     "track4":{
-      "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
       "volume": 127,
       "sample": "./samples/909/Clap.wav"
     },
     "track5":{
-      "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "notes": [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
       "volume": 127,
       "sample": "./samples/909/CH.wav"
     },
@@ -67,7 +68,7 @@ class App extends Component {
       "sample": "./samples/909/Crash.wav"
     },
     "track8":{
-      "notes": [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       "volume": 127,
       "sample": "./samples/909/Ride.wav"
     }
@@ -82,18 +83,35 @@ class App extends Component {
       ourObj[track].fireIt= new Tone.Player({"url":ourObj[track].sample, "vol":ourObj[track].volume}).toMaster(); //Change this to sample at some point?
       return true;
     });
+    
+  }
+  changeTempo=(event)=>{
+    this.setState({bpm: event.target.value});
+    Tone.Transport.bpm.value = event.target.value;
   }
   stopSequencer=()=>{
     this.setState({playstate: 0});
-    Tone.Transport.stop();
+    Tone.Transport.stop("0");
+    Tone.Transport.position="0:0:0";
   }
-
   startSequencer=()=>{
     this.setState({playstate: 1});
     Tone.Transport.start();
+    console.log(Tone.Ticks("16n"));
   }
-
+  clearSequencer=()=>{
+    const cleared=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    this.setState({
+      currentnotes: cleared 
+    });
+    Object.keys(this.sequence).map((track)=>{
+      this.sequence[track].notes = cleared;
+      console.log(this.sequence[track].notes);
+    });    
+  }
   updateNote=(index)=>{
+    console.log(index);
+    console.log(this.state.currenttrack)
     let updated= + !this.state.currentnotes[index];
     let updatedMeasure = this.state.currentnotes;
     updatedMeasure[index]=updated;
@@ -101,9 +119,10 @@ class App extends Component {
         currentnotes: updatedMeasure
     });
     
-    // Tone.Transport.scheduleOnce((time)=>{
-    //   this.sequence[this.state.currenttrack].fireIt.start()
-    // },"0:0:"+index+1);
+    // Need to be able to clear a note before doing this stuff
+    Tone.Transport.scheduleOnce((time)=>{
+      this.sequence[this.state.currenttrack].fireIt.start()
+    },"0:0:"+index+1);
   }
 
   //Update our master sequencer track to selected, and save the old one
@@ -127,30 +146,71 @@ class App extends Component {
         currentnotes: this.sequence.track1.notes
       });
     Tone.Transport.bpm.value = this.state.bpm;
-    Tone.Transport.schedule(this.startLoop, "0:0:0");
+    Tone.Transport.schedule(this.startLoop, "0:0:1");
     Tone.Transport.loop = true;
     Tone.Transport.loopEnd = '1m';
+    Tone.Transport.setLoopPoints("0:0:1", "0:0:17");
+    Tone.Transport.scheduleRepeat((time)=>{
+      this.setState({
+        transportTime:Tone.Time(time).toBarsBeatsSixteenths()
+      });
+    },"16n");
+    //Schedule the default pattern
   }
   startLoop = (time: number) => {
+    // if(chaseLoop){
+    //   chaseLoop.destroy();
+    // }
+    
+    // let chaseLoop = new Tone.Loop(function(time){
+    //   //instead of scheduling visuals inside of here
+    //   //schedule a deferred callback with Tone.Draw
+    
+    //   Tone.Draw.schedule(function(){
+    //     //this callback is invoked from a requestAnimationFrame
+    //     //and will be invoked close to AudioContext time
+    //     console.log('fart ', Tone.Time(time).toBarsBeatsSixteenths());
+    //   }, time) //use AudioContext time of the event
+    
+    // }, "16n").start(0);
+
     Object.keys(this.sequence).map((track)=>{
       let reducedSteps = this.sequence[track].notes.reduce(function(a, srch, i){ if(srch === 1)a.push(i+1); return a;},[]);
-      // console.log(deviceson);
       reducedSteps.map((steps)=>{
           Tone.Transport.scheduleOnce((time)=>{
             this.sequence[track].fireIt.start(time);
           },"0:0:"+steps);//Ableton Timing style. eg Measures:Bars:16ths.
+          Tone.Draw.schedule((time)=>{
+            console.log(track);
+          },"0:0:1")
       });
     });
+
+    Tone.Transport.scheduleOnce((time)=>{
+      Tone.Draw.schedule((time)=>{
+        console.log("meow ",Tone.Time(time).toBarsBeatsSixteenths());
+      }); 
+    }, "0:0:1");
+    Tone.Transport.scheduleOnce((time)=>{
+      Tone.Draw.schedule((time)=>{
+        console.log("woof ",Tone.Time(time).toBarsBeatsSixteenths());
+      }); 
+    }, "0:0:5");
+    // console.log(i);
+    
   }
 
   render(){
     return (
       <div className="App">
         <TransportControls
+          changeTempo={this.changeTempo}
           playstate={this.state.playstate}
           bpm={this.state.bpm}
+          transportTime = {this.state.transportTime}
           stopSequencer = {this.stopSequencer}
           startSequencer = {this.startSequencer}
+          clearSequencer = {this.clearSequencer}
         />
         <TrackSelection
           currenttrack={this.state.currenttrack}
