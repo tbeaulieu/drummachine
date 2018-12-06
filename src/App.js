@@ -6,6 +6,7 @@ import SequencerControls from './components/sequencer-controls';
 import TrackSelection from './components/trackselection';
 import './App.css';
 
+
 Object.size = function(obj) {
   var size = 0, key;
   for (key in obj) {
