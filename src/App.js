@@ -127,6 +127,9 @@ class App extends Component {
       //     })
       // }, 100);
     })
+    for(let i=0;i<document.querySelectorAll('.sequencer--button').length; i += 1){
+      document.querySelectorAll('.sequencer--button')[i].classList.remove('chase');
+    }
   }
   startSequencer=()=>{
     this.setState({playstate: 1});
