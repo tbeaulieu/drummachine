@@ -3,12 +3,13 @@
 Current Status:<br>
 Plays simple 16 step sequences.<br>
 Loads Samples<br>
-Semi-Realtime editing<br>
+Realtime editing<br>
 Instrument Switching<br>
+Trace light<br>
+Clear Track<br>
 
 Future Goals:<br>
 Volume Sliders working<br>
-Trace light via Tonal.Transport.Draw();<br>
 Web API Synth & Sample based playback at same time.<br>
 Motion Control<br>
 Export files<br>
@@ -19,6 +20,10 @@ Song Mode<br>
 Alternative Skins<br>
 VISUALIZER<br>
 And other stuff.<br>
+
+Live build here:
+
+http://tbeaulieu.github.io/drummachine/
 
 Boilerplate Create-React-App Stuff follows.
 
