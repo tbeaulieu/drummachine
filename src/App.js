@@ -27,42 +27,50 @@ function ClearTrack(props){
   "track1":{
     "notes": [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
     "volume": 127,
-    "sample": "./samples/909/BD.wav"
-        },
+    "sample": "./samples/909/BD.wav",
+    "trkLength": 16
+  },
   "track2":{
     "notes": [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
     "volume": 127,
-    "sample": "./samples/909/Snaredrum.wav"
+    "sample": "./samples/909/Snaredrum.wav",
+    "trkLength": 16
   },
   "track3":{
     "notes": [0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0],
     "volume": 127,
-    "sample": "./samples/909/Rimshot.wav"
+    "sample": "./samples/909/Rimshot.wav",
+    "trkLength": 16
   },
   "track4":{
     "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
     "volume": 127,
-    "sample": "./samples/909/Clap.wav"
+    "sample": "./samples/909/Clap.wav",
+    "trkLength": 16
   },
   "track5":{
     "notes": [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
     "volume": 127,
-    "sample": "./samples/909/CH.wav"
+    "sample": "./samples/909/CH.wav",
+    "trkLength": 16
   },
   "track6":{
     "notes": [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
     "volume": 127,
-    "sample": "./samples/909/OH.wav"
+    "sample": "./samples/909/OH.wav",
+    "trkLength": 16
   },
   "track7":{
     "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     "volume": 127,
-    "sample": "./samples/909/Crash.wav"
+    "sample": "./samples/909/Crash.wav",
+    "trkLength": 16
   },
   "track8":{
     "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     "volume": 127,
-    "sample": "./samples/909/Ride.wav"
+    "sample": "./samples/909/Ride.wav",
+    "trkLength": 16
   }
 }
 
@@ -80,6 +88,14 @@ let sounds = new Tone.Players({
     "fadeOut" : "64n"
   }).toMaster();
 
+let createTrackArray = function(trkLength){
+  let lengthArray=[]
+  for(let i=0; i<trkLength; i++){
+    lengthArray.push(i);
+  }
+  return lengthArray;
+}
+
 class App extends Component {
   constructor(props){
     super(props);
@@ -95,12 +111,13 @@ class App extends Component {
       transportTime: ""
     }
   }
-  loop = new Tone.Sequence(function(time, step){
-    for(let track in sequence){
-      if(sequence[track].notes[step] === 1){
-        sounds.get(track).start(time)
+
+  //LOOP SECTION 
+
+  loop1 = new Tone.Sequence(function(time, step){
+      if(sequence.track1.notes[step] > 0){
+        sounds.get("track1").start(time)
       }
-    }
     Tone.Draw.schedule(function(){
       document.querySelectorAll(".sequencer--button")[step].classList.toggle('chase');
       if(step!==0){
@@ -110,7 +127,52 @@ class App extends Component {
         document.querySelectorAll(".sequencer--button")[15].classList.remove('chase');
       }
     }, time);
-  }, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "16n").start(0);
+  }, createTrackArray(sequence.track1.trkLength), "16n").start(0);  //array controls pattern length
+
+  loop2 = new Tone.Sequence(function(time, step){
+      if(sequence.track2.notes[step] > 0){
+        sounds.get("track2").start(time)
+      }
+  }, createTrackArray(sequence.track2.trkLength), "16n").start(0);
+
+  loop3 = new Tone.Sequence(function(time, step){
+    if(sequence.track3.notes[step] > 0){
+      sounds.get("track3").start(time)
+    }
+  }, createTrackArray(sequence.track3.trkLength), "16n").start(0);
+ 
+  loop4 = new Tone.Sequence(function(time, step){
+    if(sequence.track4.notes[step] > 0){
+      sounds.get("track4").start(time)
+    }
+  }, createTrackArray(sequence.track4.trkLength), "16n").start(0);
+ 
+  loop5 = new Tone.Sequence(function(time, step){
+    if(sequence.track5.notes[step] > 0){
+      sounds.get("track5").start(time)
+    }
+  }, createTrackArray(sequence.track5.trkLength), "16n").start(0);
+
+  loop6 = new Tone.Sequence(function(time, step){
+    if(sequence.track6.notes[step] > 0){
+      sounds.get("track6").start(time)
+    }
+  }, createTrackArray(sequence.track6.trkLength), "16n").start(0);
+
+  loop7 = new Tone.Sequence(function(time, step){
+    if(sequence.track7.notes[step] > 0){
+      sounds.get("track7").start(time)
+    }
+  }, createTrackArray(sequence.track7.trkLength), "16n").start(0);
+
+  loop8 = new Tone.Sequence(function(time, step){
+    if(sequence.track8.notes[step] > 0){
+      sounds.get("track8").start(time)
+    }
+  }, createTrackArray(sequence.track8.trkLength), "16n").start(0);
+
+  //END LOOP SECTION
+
 
   changeTempo=(event)=>{
     this.setState({bpm: event.target.value});
@@ -131,6 +193,7 @@ class App extends Component {
       document.querySelectorAll('.sequencer--button')[i].classList.remove('chase');
     }
   }
+  
   startSequencer=()=>{
     this.setState({playstate: 1});
     Tone.Transport.start();
@@ -186,12 +249,6 @@ class App extends Component {
         currentnotes: sequence.track1.notes
       });
     Tone.Transport.bpm.value = this.state.bpm;
-    Tone.Transport.scheduleRepeat((time)=>{
-      this.setState({
-        transportTime:Tone.Time(time).toBarsBeatsSixteenths()
-      });
-    },"16n");
-    //Schedule the default pattern
   }
 
   render(){
