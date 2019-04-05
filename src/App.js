@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Tone from 'tone';
+import InfoScreen from './components/info_screen';
 import TransportControls from './components/transportcontrols';
 import SequencerControls from './components/sequencer-controls';
 //import MixerControls from './components/mixercontrols'; This is out for now until I get a better realtime check on the controlls with Tone.js
@@ -274,6 +275,11 @@ class App extends Component {
   render(){
     return (
       <div className="App">
+        <InfoScreen
+          bpm = {this.state.bpm}
+          currentSample = {sequence[this.state.currenttrack].sample.split('./samples')[1]}
+          tracklength = {sequence[this.state.currenttrack].trkLength}
+        ></InfoScreen>
         <TransportControls
           changeTempo = {this.changeTempo}
           playstate = {this.state.playstate}
@@ -298,6 +304,12 @@ class App extends Component {
           clearTrack = {this.clearTrack}
           clearSong = {this.clearSong}
         ></ClearTrack>
+        <div className="notebars">
+          <div className="notebar"></div>
+          <div className="notebar"></div>
+          <div className="notebar"></div>
+          <div className="notebar"></div>
+        </div>
         <SequencerControls 
           pads = {this.state.pads}
           currenttrack = {this.state.currenttrack}
