@@ -18,71 +18,72 @@ function ClearTrack(props){
   return (
     <div className="clearcontrols">
       <button onClick={props.clearTrack}>Clear Track</button>
-      {/* <button onClick={props.clearSong}>Clear All</button> */}
+      {/* <button onClick={props.clearSong}>Clear Sequence</button> */}
     </div>
   )
 }
+  const defaultTrackSize = 16;
+  const defaultVolume = 0;
 
  //Main Storage area for our notes in 16 beat time.
  let sequence = {
   "track1":{
-    "notes": [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
-    "volume": 127,
+    "notes": [1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0],
+    "volume": defaultVolume,
     "sample": "./samples/909/BD.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track2":{
-    "notes": [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
-    "volume": 127,
+    "notes": [0,0,0,0,1,1,1,1,0,0,0,0,1,0,0,0],
+    "volume": defaultVolume,
     "sample": "./samples/909/Snaredrum.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track3":{
-    "notes": [0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0],
-    "volume": 127,
+    "notes": [0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0],
+    "volume": defaultVolume,
     "sample": "./samples/909/Rimshot.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track4":{
-    "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-    "volume": 127,
+    "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    "volume": defaultVolume,
     "sample": "./samples/909/Clap.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track5":{
-    "notes": [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
-    "volume": 127,
+    "notes": [0,0,1,0,0,1,0,1,0,0,0,1,0,0,1,0],
+    "volume": defaultVolume,
     "sample": "./samples/909/CH.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track6":{
-    "notes": [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
-    "volume": 127,
+    "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
+    "volume": 0,
     "sample": "./samples/909/OH.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track7":{
-    "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    "volume": 127,
+    "notes": [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    "volume": defaultVolume,
     "sample": "./samples/909/Crash.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   },
   "track8":{
     "notes": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    "volume": 127,
+    "volume": defaultVolume,
     "sample": "./samples/909/Ride.wav",
-    "trkLength": 16,
+    "trkLength": defaultTrackSize,
     "muted": 0
   }
 }
-
 let sounds = new Tone.Players({
   "track1" : sequence.track1.sample,
   "track2" : sequence.track2.sample,
@@ -105,22 +106,43 @@ let createTrackArray = function(trkLength){
   return lengthArray;
 }
 
+let drumMemory = {
+
+}
+
+//CHANNEL SECTION
+// To Be Implemented better!
+
+//  const makeChannel = function(name, url){
+//   let channel = new Tone.Channel().toMaster();
+//   let player = new Tone.Player({
+//     url: url,
+//     loop: false
+//   }).sync();
+//   player.chain(channel)
+// }
+
+// for(let track in sequence){
+//   makeChannel(track);
+// }
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {
       playstate: 0,
-      bpm: 128,
+      bpm: 105,
       tracks: '',
       pads: 16,
       litNote: -1,
       currenttrack: "track1",
       currentnotes: [],
-      volume: [],
-      muted: [false,false,false,false,false,false,false,false],
-      transportTime: ""
+      volume: Array(8).fill(0),
+      muted: Array(8).fill(false),
+      transportTime: "",
+      masterTrackLength: 16
     }
   }
+
 
   //LOOP SECTION 
 
@@ -183,7 +205,6 @@ class App extends Component {
 
   //END LOOP SECTION
 
-
   changeTempo=(event)=>{
     this.setState({bpm: event.target.value});
     Tone.Transport.bpm.value = event.target.value;
@@ -192,13 +213,6 @@ class App extends Component {
     this.setState({playstate: 0});
     Tone.Transport.stop(0);
     Tone.Transport.position = "0:0:0";
-    // Tone.Transport.on("stop", () => {
-    //   // setTimeout(() => {
-    //   //     this.setState({
-    //   //       litNote: -1;
-    //   //     })
-    //   // }, 100);
-    // })
     for(let i=0;i<document.querySelectorAll('.sequencer--button').length; i += 1){
       document.querySelectorAll('.sequencer--button')[i].classList.remove('chase');
     }
@@ -216,60 +230,58 @@ class App extends Component {
     this.setState({
         currentnotes: updatedMeasure
     });
-    // Need to be able to clear a note before doing this stuff
-    // console.log(sequence[this.state.currenttrack].notes);
-    // Tone.Transport.scheduleOnce((time)=>{
-    //   sequence[this.state.currenttrack].fireIt.start()
-    // },"0:0:"+index+1);
   }
+  
   //Update our master sequencer track to selected, and save the old one
   switchTrack=(event, key)=>{
     let oldTrack = this.state.currenttrack;
-    sequence[oldTrack].notes=this.state.currentnotes; 
+    sequence[oldTrack].notes = this.state.currentnotes; 
     this.setState((prevState)=>({ 
       currentnotes: sequence[key].notes,
-      currenttrack: key
+      currenttrack: key,
+      masterTrackLength: sequence[key].trkLength
     }));
     if(this.state.playstate !== 1){
       sounds.get(key).start();
     }
   }
   muteTrack=(event, index, key)=>{
-    console.log(index);
     let muteArray = this.state.muted;
     muteArray[index] = !this.state.muted[index];
     this.setState((prevState)=>({
       muted: muteArray
     }));
     sequence[key].muted = !sequence[key].muted;
-    console.log(sequence[key].muted);
   }
-
+  changeVolume=(event, key)=>{
+    sequence[key].volume = event.target.value;
+  }
   clearTrack=()=>{
-    const cleared = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    
     this.setState({
-      currentnotes: cleared
+      currentnotes: Array(16).fill(0)
     });
-    sequence[this.state.currenttrack].notes = cleared;
+    sequence[this.state.currenttrack].notes = Array(16).fill(0);
   }
   clearSong=()=>{
-    const cleared = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    this.setState({
-      currentnotes: cleared
-    });
+    this.setState((prevState)=>({
+      currentnotes: Array(16).fill(0)
+    }));
     for(let track in sequence){
-      sequence[track].notes = cleared;
-      console.log(this.state.currenttrack)
+      sequence[track].notes = Array(16).fill(0);
     }
   }
   componentDidMount(){
     // StartAudioContext(Tone.context);
     // this.initializeSounds(sequence);
+    var context = new AudioContext();  //Required for Chrome etc.
+
     this.setState({
         tracks: Object.size(sequence),
         currentnotes: sequence.track1.notes
       });
     Tone.Transport.bpm.value = this.state.bpm;
+
   }
 
   render(){
@@ -278,7 +290,7 @@ class App extends Component {
         <InfoScreen
           bpm = {this.state.bpm}
           currentSample = {sequence[this.state.currenttrack].sample.split('./samples')[1]}
-          tracklength = {sequence[this.state.currenttrack].trkLength}
+          masterTrackLength = {this.state.masterTrackLength}
         ></InfoScreen>
         <TransportControls
           changeTempo = {this.changeTempo}
@@ -295,21 +307,12 @@ class App extends Component {
           switchTrack = {this.switchTrack}
           muteTrack = {this.muteTrack}
           muted = {this.state.muted}
+          changeVolume = {this.changeVolume}
         />
-        {/* <MixerControls
-          tracks={this.state.tracks}
-          sequence={sequence}
-          /> */}
         <ClearTrack
           clearTrack = {this.clearTrack}
           clearSong = {this.clearSong}
         ></ClearTrack>
-        <div className="notebars">
-          <div className="notebar"></div>
-          <div className="notebar"></div>
-          <div className="notebar"></div>
-          <div className="notebar"></div>
-        </div>
         <SequencerControls 
           pads = {this.state.pads}
           currenttrack = {this.state.currenttrack}

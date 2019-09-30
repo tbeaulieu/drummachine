@@ -1,18 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class TransportControls extends Component{
-    render(){
-        return(
-            <div className="transport-controls-wrapper">
-                <p>Tempo: <input type="range" defaultValue={this.props.bpm} onChange={this.props.changeTempo} min="20" max="300"/></p>
-                <button className="stop" onClick={this.props.stopSequencer}>stop</button> 
-                <button className="play" onClick={this.props.startSequencer} data-active={this.props.playstate === 1 ? true : false}>play</button>
-                {/* <p>{this.props.transportTime}</p> */}
-                {/* <button className="clear" onClick={this.props.clearSequencer}>clear</button> */}
-                {/* {this.props.bpm>180 && <h1 className="spinner">REAL HARDCORE MANNNNNN!!!</h1>} */}
-            </div>
-        ) 
-    }
+function TransportControls(props){
+    return(
+        <div className="transport-controls-wrapper">
+            <p>TEMPO: <input type="range" defaultValue={props.bpm} onChange={props.changeTempo} min="20" max="300"/></p>
+            <button className="stop" onClick={props.stopSequencer}>stop</button> 
+            <button className="play" onClick={props.startSequencer} data-active={props.playstate === 1 ? true : false}>play</button>
+            {/* <p>{props.transportTime}</p> */}
+        </div>
+    ) 
 }
 
 export default TransportControls;
